@@ -78,7 +78,7 @@ local layouts =
     awful.layout.suit.max.fullscreen,
     awful.layout.suit.magnifier
 }
-lain.layout.termfair.nmaster = 3
+lain.layout.termfair.nmaster = 2
 lain.layout.termfair.ncol = 1
 -- }}}
 
@@ -571,7 +571,7 @@ awful.rules.rules = {
     { rule_any = { class = {
         'Flashplayer', 'mpv', 'TempTerm', 'Xfce4-screenshooter',
         'Wine', 'shadowsocks-qt5' },
-        -- name = {},
+        name = { 'Event Tester' },
         instance = { 'QQ.exe' },
         role = { 'TempTerm', }, },
       properties = {
@@ -667,4 +667,6 @@ client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_n
 c_util.run_once("xcompmgr &")
 c_util.run_once("light-locker")
 c_util.run_once("nm-applet")
+awful.util.spawn("/usr/bin/setxkbmap -option caps:super")
+c_util.run_once("xcape -t 250 -e 'Super_L=Escape'")
 -- }}}
