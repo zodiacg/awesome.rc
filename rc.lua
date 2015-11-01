@@ -577,6 +577,8 @@ awful.rules.rules = {
       properties = {
         floating = true,
       } },
+    { rule = { instance = 'QQ.exe' },
+      properties = { border_width = 0 } },
     { rule = { class = "MPlayer" },
       properties = { floating = true } },
     { rule = { class = "pinentry" },
@@ -612,7 +614,7 @@ client.connect_signal("manage", function (c, startup)
         end
     end
 
-    local titlebars_enabled = true
+    local titlebars_enabled = false
     if (c.class == "Wine") then titlebars_enabled = false end
     if titlebars_enabled and (c.type == "normal" or c.type == "dialog") then
         -- buttons for the titlebar
