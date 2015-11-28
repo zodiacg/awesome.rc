@@ -12,7 +12,7 @@ theme.wallpaper = "/usr/share/awesome/themes/zenburn/zenburn-background.png"
 -- }}}
 
 -- {{{ Styles
-theme.font      = "文泉驿微米黑 9"
+theme.font      = "Terminus 9"
 
 -- {{{ Colors
 theme.fg_normal  = "#DCDCCC"

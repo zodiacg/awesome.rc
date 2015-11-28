@@ -18,7 +18,7 @@ table.insert(naughty.config.icon_dirs, '/usr/share/icons/hicolor/48x48/apps/')
 table.insert(naughty.config.icon_dirs, '/usr/share/icons/hicolor/48x48/status/')
 
 -- load my applications menu
-local appmenu = require("menu")
+-- local appmenu = require("menu")
 
 os.setlocale("zh_CN.UTF-8")
 
@@ -121,7 +121,7 @@ end
 -- Create a laucher widget and a main menu
 m_awesome = {
   { "编辑配置 (&E)", editor .. " " .. awesome.conffile },
-  { "重新加载 (&R)", awesome.restart, '/usr/share/icons/elementary-xfce/actions/16/reload.png' },
+  { "重新加载 (&R)", awesome.restart },
   { "Session注销 (&U)", "xfce4-session-logout"},
   { "注销 (&L)", awesome.quit },
 }
@@ -131,13 +131,13 @@ m_main = awful.menu({ items = {
     { "Thunar (&F)", "thunar ", "/usr/share//icons/hicolor/16x16/apps/Thunar.png" },
     { "&Google Chrome", "google-chrome-unstable", "/usr/share/icons/hicolor/16x16/apps/google-chrome-unstable.png"},
     { "&Shadowsocks-Qt5", "ss-qt5" },
-    { "A&ndroid Studio", "\"/home/leoliu/AndroidSDK/android-studio/bin/studio.sh\" ", "///home/leoliu/AndroidSDK/android-studio/bin/studio.png" },
+    { "A&ndroid Studio", "android-studio" },
     { "终端 (&T)", "xfce4-terminal"},
-    { "应用程序 (&P)", xdgmenu(terminal) },
-    { "锁屏 (&L)", "light-locker-command -l", "/usr/share/icons/elementary-xfce/actions/16/lock.png"},
+--    { "应用程序 (&P)", xdgmenu(terminal) },
+    { "锁屏 (&L)", "light-locker-command -l", "/usr/share/icons/Numix/16/actions/lock.svg"},
     { "注销 (&O)", awesome.quit },
-    { "重启 (&R)", "zenity --question --title '重启' --text '你确定重启吗？' --default-cancel && systemctl reboot", '/usr/share/icons/elementary-xfce/actions/16/reload.png' },
-    { "关机 (&H)", "zenity --question --title '关机' --text '你确定关机吗？' --default-cancel && systemctl poweroff", '/usr/share/icons/elementary-xfce/actions/16/gtk-quit.png' },
+    { "重启 (&R)", "zenity --question --title '重启' --text '你确定重启吗？' --default-cancel && systemctl reboot", '/usr/share/icons/Numix/16/actions/reload.svg' },
+    { "关机 (&H)", "zenity --question --title '关机' --text '你确定关机吗？' --default-cancel && systemctl poweroff", '/usr/share/icons/Numix/16/actions/gtk-quit.svg' },
 }})
 
 w_launcher = awful.widget.launcher({ image = beautiful.awesome_icon,
@@ -234,8 +234,7 @@ w_cpu = lain.widgets.cpu({
 -- Network
 w_net = lain.widgets.net({
     settings = function()
-        widget:set_markup(markup("#7AC82E", " " .. net_now.received)
-                          .. "K " ..
+        widget:set_markup(markup("#7AC82E", " " .. net_now.received .. "K ") ..
                           markup("#46A8C3", " " .. net_now.sent .. "K "))
     end
 })
@@ -254,8 +253,8 @@ ws_taglist.buttons = awful.util.table.join(
                      awful.button({ modkey }, 1, awful.client.movetotag),
                      awful.button({ }, 3, awful.tag.viewtoggle),
                      awful.button({ modkey }, 3, awful.client.toggletag),
-                     awful.button({ }, 4, function(t) awful.tag.viewnext(awful.tag.getscreen(t)) end),
-                     awful.button({ }, 5, function(t) awful.tag.viewprev(awful.tag.getscreen(t)) end)
+                     awful.button({ }, 5, function(t) awful.tag.viewnext(awful.tag.getscreen(t)) end),
+                     awful.button({ }, 4, function(t) awful.tag.viewprev(awful.tag.getscreen(t)) end)
                      )
 
 ws_tasklist.buttons = awful.util.table.join(
@@ -370,6 +369,7 @@ local keynumber_reg = function (i, which)
                 end
             end),
         awful.key({ modkey, "Control" }, i,
+            -- 同时显示i号tag
             function ()
                 local screen = mouse.screen
                 if tags[screen][which] then
@@ -395,6 +395,7 @@ local keynumber_reg = function (i, which)
                 end
             end),
         awful.key({ modkey, "Control", "Shift" }, i,
+            -- 在i号tag上也显示当前client
             function ()
                 if client.focus and tags[client.focus.screen][which] then
                     awful.client.toggletag(tags[client.focus.screen][which])
@@ -440,7 +441,7 @@ globalkeys = awful.util.table.join(
                 c_util.run_or_raise("xfce4-terminal --role=TempTerm --geometry=100x35+343+180", { role = "TempTerm" })
             end),
     awful.key({ modkey, "Control" }, "r", awesome.restart),
-    awful.key({ modkey, "Control"   }, "q", awesome.quit),
+    awful.key({ modkey, "Control" }, "q", awesome.quit),
 
     awful.key({ modkey,           }, "l",     function () awful.tag.incmwfact( 0.05)    end),
     awful.key({ modkey,           }, "h",     function () awful.tag.incmwfact(-0.05)    end),
@@ -453,8 +454,10 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey, "Control" }, "n", awful.client.restore),
 
     -- Prompt
-    awful.key({ modkey            }, "r",     function () ws_promptbox[mouse.screen]:run() end),
+    awful.key({ modkey, "Mod1"    }, "r",     function () ws_promptbox[mouse.screen]:run() end),
     awful.key({ "Mod1"            }, "F2",    function () ws_promptbox[mouse.screen]:run() end),
+    -- Menubar
+    awful.key({ modkey,           }, "r",     function() menubar.show() end),
 
     awful.key({ modkey            }, "x",
               function ()
@@ -463,15 +466,14 @@ globalkeys = awful.util.table.join(
                   awful.util.eval, nil,
                   awful.util.getdir("cache") .. "/history_eval")
               end),
-    -- Menubar
-    awful.key({ modkey, "Mod1"    }, "p", function() menubar.show() end),
+
 
     -- Non-empty tag browsing
     awful.key({ modkey,           }, "p", function() lain.util.tag_view_nonempty(-1) end ),
     awful.key({ modkey,           }, "n", function() lain.util.tag_view_nonempty(1) end ),
 
     -- screenshot
-    awful.key({ "Control", "Mod1" }, "a", function() awful.util.spawn("xfce4-screenshooter") end),
+    awful.key({ "Control", "Mod1" }, "a", function() awful.util.spawn("xfce4-screenshooter -r") end),
 
     -- Alt-Tab
     awful.key({ "Mod1",           }, "Tab",
@@ -521,6 +523,7 @@ globalkeys = awful.util.table.join(
 clientkeys = awful.util.table.join(
     awful.key({ modkey,           }, "f",      function (c) c.fullscreen = not c.fullscreen  end),
     awful.key({ modkey, "Shift"   }, "c",      function (c) c:kill()                         end),
+    awful.key({ "Mod1"            }, "F4",     function (c) c:kill()                         end),
     awful.key({ modkey, "Control" }, "space",  awful.client.floating.toggle                     ),
     awful.key({ modkey, "Control" }, "Return", function (c) c:swap(awful.client.getmaster()) end),
     awful.key({ modkey,           }, "o",      awful.client.movetoscreen                        ),
@@ -665,10 +668,24 @@ client.connect_signal("focus", function(c) c.border_color = beautiful.border_foc
 client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
 -- }}}
 
+-- {{{ collect orphan process (by lilydjwg)
+pcall(function()
+    package.cpath = package.cpath .. ';/home/leoliu/playground/clua/?.so'
+    local clua = require('clua')
+    clua.setsubreap(true)
+    clua.ignore_SIGCHLD()
+    local pid = 1
+    while pid > 0 do
+        _, pid = clua.reap()
+    end
+end)
+-- }}}
+
 -- {{{ autostart
 c_util.run_once("xcompmgr &")
 c_util.run_once("light-locker")
 c_util.run_once("nm-applet")
+c_util.run_once("fcitx -d")
 awful.util.spawn("/usr/bin/setxkbmap -option caps:super")
 c_util.run_once("xcape -t 250 -e 'Super_L=Escape'")
 -- }}}
