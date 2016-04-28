@@ -8,11 +8,12 @@
 
 local debug  = require("debug")
 
-local capi   = { timer = timer }
+local capi   = { timer = (type(timer) == 'table' and timer or require ("gears.timer")) }
 local io     = { open  = io.open,
                  lines = io.lines,
                  popen = io.popen }
 local rawget = rawget
+local table  = { sort   = table.sort }
 
 -- Lain helper functions for internal use
 -- lain.helpers
@@ -48,11 +49,23 @@ end
 -- list/table if the file does not exist
 function helpers.lines_from(file)
   if not helpers.file_exists(file) then return {} end
-  lines = {}
+  local lines = {}
   for line in io.lines(file) do
     lines[#lines + 1] = line
   end
   return lines
+end
+
+-- match all lines from a file, returns an empty
+-- list/table if the file or match does not exist
+function helpers.lines_match(regexp, file)
+	local lines = {}
+	for index,line in pairs(helpers.lines_from(file)) do
+		if string.match(line, regexp) then 
+			lines[index] = line
+		end  
+	end
+	return lines
 end
 
 -- get first line of a file, return nil if
@@ -76,8 +89,11 @@ end
 
 helpers.timer_table = {}
 
-function helpers.newtimer(name, timeout, fun, nostart)
-    helpers.timer_table[name] = capi.timer({ timeout = timeout })
+function helpers.newtimer(_name, timeout, fun, nostart)
+    local name = timeout
+    if not helpers.timer_table[name] then
+        helpers.timer_table[name] = capi.timer({ timeout = timeout })
+    end
     helpers.timer_table[name]:connect_signal("timeout", fun)
     helpers.timer_table[name]:start()
     if not nostart then
@@ -112,5 +128,24 @@ function helpers.get_map(element)
 end
 
 -- }}}
+
+--{{{ Iterate over table of records sorted by keys
+function helpers.spairs(t)
+    -- collect the keys
+    local keys = {}
+    for k in pairs(t) do keys[#keys+1] = k end
+
+    table.sort(keys)
+
+    -- return the iterator function
+    local i = 0
+    return function()
+        i = i + 1
+        if keys[i] then
+            return keys[i], t[keys[i]]
+        end
+    end
+end
+--}}}
 
 return helpers

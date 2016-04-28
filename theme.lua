@@ -8,7 +8,7 @@
 
 -- {{{ Main
 theme = {}
-theme.wallpaper = "/usr/share/awesome/themes/zenburn/zenburn-background.png"
+theme.wallpaper = "/home/leoliu/Pictures/wallpaper/chrismas_is_coming.png"
 -- }}}
 
 -- {{{ Styles

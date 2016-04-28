@@ -92,14 +92,14 @@ end
 
 -- {{{ Tags
 -- Define a tag table which hold all screen tags.
-tags_name = { "1E", "2V", "3Web", "4Term", "5QQ", "6MPV", "7", "8", "9", '0' }
+tags_name = { "1Term", "2Web", "3E", "4E", "5V", "6QQ", "7", "8", "9", '0' }
 tags_layout = {
-    lain.layout.uselesstile,
-    lain.layout.uselesstile,
-    awful.layout.suit.max,
     lain.layout.termfair,
-    awful.layout.suit.floating,
+    awful.layout.suit.max,
     lain.layout.uselesstile,
+    lain.layout.uselesstile,
+    lain.layout.uselesstile,
+    awful.layout.suit.floating,
     lain.layout.uselesstile,
     lain.layout.uselesstile,
     lain.layout.uselesstile,
@@ -132,6 +132,7 @@ m_main = awful.menu({ items = {
     { "&Google Chrome", "google-chrome-unstable", "/usr/share/icons/hicolor/16x16/apps/google-chrome-unstable.png"},
     { "&Shadowsocks-Qt5", "ss-qt5" },
     { "A&ndroid Studio", "android-studio" },
+    { "Win&7", "/usr/lib/virtualbox/VirtualBox --comment \"Win7\" --startvm \"2843ab82-5bb9-4795-8712-1447b0a3046d\"" ,"/usr/share/icons/hicolor/16x16/mimetypes/virtualbox.png"},
     { "终端 (&T)", "xfce4-terminal"},
 --    { "应用程序 (&P)", xdgmenu(terminal) },
     { "锁屏 (&L)", "light-locker-command -l", "/usr/share/icons/Numix/16/actions/lock.svg"},
@@ -580,6 +581,8 @@ awful.rules.rules = {
       properties = {
         floating = true,
       } },
+    { rule = { role = 'browser' },
+      properties = { opacity = 1 } },
     { rule = { instance = 'QQ.exe' },
       properties = { border_width = 0 } },
     { rule = { class = "MPlayer" },
@@ -664,8 +667,14 @@ client.connect_signal("manage", function (c, startup)
     end
 end)
 
-client.connect_signal("focus", function(c) c.border_color = beautiful.border_focus end)
-client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
+client.connect_signal("focus", function(c)
+                                   c.border_color = beautiful.border_focus
+                                   c.opacity = 1
+                               end)
+client.connect_signal("unfocus", function(c)
+                                     c.border_color = beautiful.border_normal
+                                     c.opacity = 0.8
+                                 end)
 -- }}}
 
 -- {{{ collect orphan process (by lilydjwg)
