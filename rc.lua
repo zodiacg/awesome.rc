@@ -254,8 +254,8 @@ ws_taglist.buttons = awful.util.table.join(
                      awful.button({ modkey }, 1, awful.client.movetotag),
                      awful.button({ }, 3, awful.tag.viewtoggle),
                      awful.button({ modkey }, 3, awful.client.toggletag),
-                     awful.button({ }, 5, function(t) awful.tag.viewnext(awful.tag.getscreen(t)) end),
-                     awful.button({ }, 4, function(t) awful.tag.viewprev(awful.tag.getscreen(t)) end)
+                     awful.button({ }, 5, function(t) lain.util.tag_view_nonempty(1,awful.tag.getscreen(t)) end),
+                     awful.button({ }, 4, function(t) lain.util.tag_view_nonempty(-1,awful.tag.getscreen(t)) end)
                      )
 
 ws_tasklist.buttons = awful.util.table.join(
@@ -474,7 +474,7 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey,           }, "n", function() lain.util.tag_view_nonempty(1) end ),
 
     -- screenshot
-    awful.key({ "Control", "Mod1" }, "a", function() awful.util.spawn("xfce4-screenshooter -r") end),
+    awful.key({ "Control", "Mod1" }, "q", function() awful.util.spawn("xfce4-screenshooter -r") end),
 
     -- Alt-Tab
     awful.key({ "Mod1",           }, "Tab",
@@ -574,7 +574,7 @@ awful.rules.rules = {
                      buttons = clientbuttons } },
     { rule_any = { class = {
         'Flashplayer', 'mpv', 'TempTerm', 'Xfce4-screenshooter',
-        'Wine', 'shadowsocks-qt5' },
+        'Wine', 'shadowsocks-qt5', 'baka-mplayer' },
         name = { 'Event Tester' },
         instance = { 'QQ.exe' },
         role = { 'TempTerm', }, },
