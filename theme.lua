@@ -12,7 +12,7 @@ theme.wallpaper = "/home/leoliu/Pictures/wallpaper/chrismas_is_coming.png"
 -- }}}
 
 -- {{{ Styles
-theme.font      = "Terminus 9"
+theme.font      = "Terminus(TTF) 9"
 
 -- {{{ Colors
 theme.fg_normal  = "#DCDCCC"

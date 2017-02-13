@@ -135,7 +135,7 @@ m_main = awful.menu({ items = {
     { "Win&7", "/usr/lib/virtualbox/VirtualBox --comment \"Win7\" --startvm \"2843ab82-5bb9-4795-8712-1447b0a3046d\"" ,"/usr/share/icons/hicolor/16x16/mimetypes/virtualbox.png"},
     { "终端 (&T)", "xfce4-terminal"},
 --    { "应用程序 (&P)", xdgmenu(terminal) },
-    { "锁屏 (&L)", "light-locker-command -l", "/usr/share/icons/Numix/16/actions/lock.svg"},
+    { "锁屏 (&L)", "light-locker-command -l"},
     { "注销 (&O)", awesome.quit },
     { "重启 (&R)", "zenity --question --title '重启' --text '你确定重启吗？' --default-cancel && systemctl reboot", '/usr/share/icons/Numix/16/actions/reload.svg' },
     { "关机 (&H)", "zenity --question --title '关机' --text '你确定关机吗？' --default-cancel && systemctl poweroff", '/usr/share/icons/Numix/16/actions/gtk-quit.svg' },
