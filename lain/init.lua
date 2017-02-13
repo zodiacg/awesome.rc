@@ -9,13 +9,8 @@
                                                    
 --]]
 
-package.loaded.lain = nil
-
-local lain =
-{
-    layout  = require("lain.layout"),
-    util    = require("lain.util"),
-    widgets = require("lain.widgets")
+return {
+    layout = require("lain.layout"),
+    util   = require("lain.util"),
+    widget = require("lain.widget")
 }
-
-return lain
