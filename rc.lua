@@ -424,7 +424,7 @@ globalkeys = awful.util.table.join(
     -- Standard program
     awful.key({ modkey,           }, "Return", function ()
                 -- Go and find a terminal for me
-                c_util.run_or_raise("xfce4-terminal --role=TempTerm --geometry=120x60+343+180", { role = "TempTerm" })
+                c_util.run_or_raise("xfce4-terminal --role=TempTerm --geometry=100x35+343+180", { role = "TempTerm" })
                 end,
               {description = "open a new temp terminal or find one existing", group = "launcher"}),
     awful.key({ modkey, "Control" }, "r", awesome.restart,
@@ -496,7 +496,7 @@ globalkeys = awful.util.table.join(
               {description = "open a terminal", group = "program"}),
     awful.key({ modkey,    "Shift"         }, "Return",
                 function ()
-                    awful.util.spawn("xfce4-terminal --role=TempTerm --geometry=120x60+343+180")
+                    awful.util.spawn("xfce4-terminal --role=TempTerm --geometry=100x35+343+180")
                 end,
               {description = "open a temp terminal", group = "program"}),
     -- move temp client to tag10

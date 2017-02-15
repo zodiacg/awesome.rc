@@ -14,6 +14,7 @@ theme.font                                      = "xos4 Terminus 9"
 -- }}}
 
 -- {{{ Styles
+theme.awesome_icon                              = "/usr/share/awesome/themes/zenburn/awesome-icon.png"
 theme.menu_bg_normal                            = "#000000"
 theme.menu_bg_focus                             = "#000000"
 theme.bg_normal                                 = "#000000"
