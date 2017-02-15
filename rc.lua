@@ -169,6 +169,21 @@ w_volume.widget:buttons(awful.util.table.join(
         end)
 ))
 
+-- Battery
+local ico_bat = wibox.widget.imagebox(theme.widget_batt)
+local w_bat = lain.widget.bat({
+    settings = function()
+        if bat_now.perc ~= "N/A" then
+            bat_now.perc = bat_now.perc .. "%"
+        end
+        if bat_now.ac_status == 1 then
+            bat_now.perc = bat_now.perc .. " plug"
+        end
+
+        widget:set_markup(markup.fontfg(theme.font, theme.fg_normal, bat_now.perc .. " "))
+    end
+})
+
 -- Uptime
 local ico_uptime = wibox.widget.imagebox(theme.widget_uptime)
 local w_uptime = wibox.widget.textbox()
@@ -319,7 +334,6 @@ awful.screen.connect_for_each_screen(function(s)
         nil, -- Middle widget
         { -- Right widgets
             layout = wibox.layout.fixed.horizontal,
-            wibox.widget.systray(),
             ico_netdown,
             w_netdowninfo,
             ico_netup,
@@ -332,6 +346,9 @@ awful.screen.connect_for_each_screen(function(s)
             w_uptime,
             ico_volume,
             w_volume,
+            ico_bat,
+            w_bat,
+            wibox.widget.systray(),
             ico_clock,
             w_textclock,
         },
