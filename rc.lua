@@ -409,7 +409,7 @@ globalkeys = awful.util.table.join(
         end,
         {description = "focus next by index", group = "client"}
     ),
-    awful.key({ "Mod1",           }, "Tab",
+    awful.key({ "Mod1", "Shift"   }, "Tab",
         function ()
             awful.client.focus.byidx(-1)
         end,
@@ -516,6 +516,8 @@ globalkeys = awful.util.table.join(
                     awful.util.spawn("xfce4-terminal --role=TempTerm --geometry=100x35+343+180")
                 end,
               {description = "open a temp terminal", group = "program"}),
+    awful.key({ modkey,                    }, "z", function () awful.util.spawn("setxkbmap -option caps:super") end,
+              {description = "set keyboard layout", group = "program"}),
     -- move temp client to tag10
     awful.key({ modkey,           }, "q",
         function ()
