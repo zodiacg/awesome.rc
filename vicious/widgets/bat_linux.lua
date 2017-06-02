@@ -31,12 +31,18 @@ local function worker(format, warg)
         ["Unknown\n"]     = "⌁",
         ["Charged\n"]     = "↯",
         ["Charging\n"]    = "+",
-        ["Discharging\n"] = "−"
+        ["Discharging\n"] = "-"
     }
+
+    -- Get current power usage in watt
+    local curpower = "N/A"
+    if battery.power_now then
+        curpower = string.format("%.2f", tonumber(battery.power_now) /1000000)
+    end
 
     -- Check if the battery is present
     if battery.present ~= "1\n" then
-        return {battery_state["Unknown\n"], 0, "N/A", 0}
+        return {battery_state["Unknown\n"], 0, "N/A", 0, curpower}
     end
 
 
@@ -51,7 +57,7 @@ local function worker(format, warg)
         remaining, capacity = battery.energy_now, battery.energy_full
         capacity_design = battery.energy_full_design or capacity
     else
-        return {battery_state["Unknown\n"], 0, "N/A", 0}
+        return {battery_state["Unknown\n"], 0, "N/A", 0, curpower}
     end
 
     -- Calculate capacity and wear percentage (but work around broken BAT/ACPI implementations)
@@ -65,7 +71,7 @@ local function worker(format, warg)
     elseif battery.power_now then
         rate = tonumber(battery.power_now)
     else
-        return {state, percent, "N/A", wear}
+        return {state, percent, "N/A", wear, curpower}
     end
 
     -- Calculate remaining (charging or discharging) time
@@ -74,10 +80,10 @@ local function worker(format, warg)
     if rate ~= nil and rate ~= 0 then
         if state == "+" then
             timeleft = (tonumber(capacity) - tonumber(remaining)) / tonumber(rate)
-        elseif state == "−" then
+        elseif state == "-" then
             timeleft = tonumber(remaining) / tonumber(rate)
         else
-            return {state, percent, time, wear}
+            return {state, percent, time, wear, curpower}
         end
 
         -- Calculate time
@@ -87,7 +93,7 @@ local function worker(format, warg)
         time = string.format("%02d:%02d", hoursleft, minutesleft)
     end
 
-    return {state, percent, time, wear}
+    return {state, percent, time, wear, curpower}
 end
 -- }}}
 

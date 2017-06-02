@@ -102,7 +102,7 @@ m_awesome = {
   { "编辑配置 (&E)", editor .. " " .. awesome.conffile },
   { "重新加载 (&R)", awesome.restart },
   { "Session注销 (&U)", "xfce4-session-logout"},
-  { "注销 (&L)", awesome.quit },
+  { "注销 (&L)", function() awesome.quit() end },
 }
 
 m_main = awful.menu({ items = {
@@ -115,7 +115,7 @@ m_main = awful.menu({ items = {
     { "终端 (&T)", "xfce4-terminal"},
 --    { "应用程序 (&P)", xdgmenu(terminal) },
     { "锁屏 (&L)", "light-locker-command -l", "/usr/share/icons/Numix/16/actions/lock.svg"},
-    { "注销 (&O)", awesome.quit },
+    { "注销 (&O)", function() awesome.quit() end},
     { "重启 (&R)", "zenity --question --title '重启' --text '你确定重启吗？' --default-cancel && systemctl reboot", '/usr/share/icons/Numix/16/actions/reload.svg' },
     { "关机 (&H)", "zenity --question --title '关机' --text '你确定关机吗？' --default-cancel && systemctl poweroff", '/usr/share/icons/Numix/16/actions/gtk-quit.svg' },
 }})
@@ -136,7 +136,7 @@ local w_textclock = wibox.widget.textclock(markup("#7788af", "%A %m月%d日") ..
 local w_cal = lain.widget.calendar({
     attach_to = { w_textclock },
     notification_preset = {
-        font = "Terminus(TTF) 9",
+        font = "xos4 Terminus 9",
         fg   = theme.fg_normal,
         bg   = theme.bg_normal
     }

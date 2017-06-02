@@ -8,7 +8,7 @@
 
 -- {{{ Main
 theme = {}
-theme.wallpaper = "/home/leoliu/Pictures/wallpaper/chrismas_is_coming.png"
+theme.wallpaper = "/home/leoliu/Pictures/wallpaper/242356.png"
 theme.confdir                                   = os.getenv("HOME") .. "/.config/awesome/"
 theme.font                                      = "xos4 Terminus 9"
 -- }}}
