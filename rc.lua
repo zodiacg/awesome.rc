@@ -108,7 +108,7 @@ m_awesome = {
 m_main = awful.menu({ items = {
     { "&Awesome", m_awesome, beautiful.awesome_icon },
     { "Thunar (&F)", "thunar ", "/usr/share//icons/hicolor/16x16/apps/Thunar.png" },
-    { "&Google Chrome", "google-chrome-unstable", "/usr/share/icons/hicolor/16x16/apps/google-chrome-unstable.png"},
+    { "&Google Chrome", "google-chrome-stable", "/usr/share/icons/hicolor/16x16/apps/google-chrome-stable.png"},
     { "&Shadowsocks-Qt5", "ss-qt5" },
 --    { "A&ndroid Studio", "android-studio" },
     { "Win&7", "/usr/lib/virtualbox/VirtualBox --comment \"Win7\" --startvm \"2843ab82-5bb9-4795-8712-1447b0a3046d\"" ,"/usr/share/icons/hicolor/16x16/mimetypes/virtualbox.png"},
