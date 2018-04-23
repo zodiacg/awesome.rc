@@ -13,8 +13,10 @@ To use contrib widgets uncomment the line that loads them in
 init.lua. Or you can load them in your rc.lua after you require
 Vicious:
 
-  vicious = require("vicious")
-  vicious.contrib = require("vicious.contrib")
+```lua
+vicious = require("vicious")
+vicious.contrib = require("vicious.contrib")
+```
 
 
 Widget types
@@ -58,7 +60,34 @@ Supported platforms: Linux (required tools: `sysfs`)
 
 **vicious.contrib.batproc**
 
+**vicious.contrib.btc**
+
+Provides current Bitcoin price in any currency by [code](https://en.wikipedia.org/wiki/ISO_4217).
+Requires `curl` and one of the following json libraries:
+ - [lua-cjson](https://github.com/mpx/lua-cjson/)
+ - [luajson](https://github.com/harningt/luajson/)
+
+Supported platforms: Linux, FreeBSD
+
+- Arguments:
+  * takes currency code, i.e. `"usd"`, `"rub"` and other. `"usd"` by
+    default
+- Returns
+  * a table with string keys: {price}
+
 **vicious.contrib.countfiles**
+
+**vicious.widgets.cmus**
+
+Provides cmus player information using `cmus-remote`.
+Supported platforms: platform independent.
+
+- Arguments:
+  * Takes a table as an argument, 1st field should be the socket including host
+    (or nil).
+- Returns:
+  * Returns a table with string keys: `{status}`, `{artist}`, `{title}`,
+    `{duration}`, `{file}`,  `{continue}`, `{shuffle}`, `{repeat}`.
 
 **vicious.contrib.dio**
 
@@ -166,6 +195,8 @@ Supported Platforms: platform independent
 
 Usage examples
 ---------------------------------
+
+```lua
 Pulse Audio widget
   vol = wibox.widget.textbox()
   vicious.register(vol, vicious.contrib.pulse, " $1%", 2, "alsa_output.pci-0000_00_1b.0.analog-stereo")
@@ -182,3 +213,4 @@ Buildbot widget
     {builder="tarball-slave", url="http://buildbot.buildbot.net"}
   }
   vicious.register(buildbotwidget, vicious.contrib.buildbot, "$1,", 3600, buildbotwidget_warg)
+```

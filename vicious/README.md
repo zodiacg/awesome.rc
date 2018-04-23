@@ -5,7 +5,7 @@ catering to users of the "awesome" window manager. It was derived from
 the old "Wicked" widget library, and has some of the old Wicked widget
 types, a few of them rewritten, and a good number of new ones:
 
-- http://git.sysphere.org/vicious/about/
+- https://github.com/Mic92/vicious
 
 Vicious widget types are a framework for creating your own
 widgets. Vicious contains modules that gather data about your system,
@@ -24,7 +24,7 @@ manager (ie. Ion, WMII). It is compatible with both Lua v5.1 and v5.2.
 
 ```bash
   $ lua
-  > widgets = require("vicious.widgets")
+  > widgets = require("vicious.widgets.init")
   > print(widgets.volume(nil, "Master")[1])
     100
 ```
@@ -323,9 +323,10 @@ Supported platforms: Linux, FreeBSD.
     total system memory, 4th as free memory, 5th as swap usage in percent, 6th
     as swap usage, 7th as total system swap, 8th as free swap and 9th as
     memory usage with buffers and cache
-  * FreeBSD: see above, but 10th value as memory usage with buffers and cache
-    as percent and 11th value as wired memory (memory used by kernel) is
-    reported
+  * FreeBSD: see above, but there are four more values: the 9th value is wired memory
+    in percent, the 10th value is wired memory. The 11th and 12th value return
+    'not freeable memory' (basically active+inactive+wired) in percent and megabytes,
+    respectively.
 
 **vicious.widgets.mpd**
 
@@ -395,9 +396,11 @@ Supported platforms: platform independent.
 
 - Arguments:
   * Takes the Linux or BSD distribution name as an argument, i.e. `"Arch"`,
-    `"FreeBSD"`
+    `"Arch C"`, `"Arch S"`, `"Debian"`, `"Ubuntu"`, `"Fedora"`, `"FreeBSD"`,
+    `"Mandriva"`
 - Returns:
-  * Returns 1st value as the count of available updates
+  * Returns 1st value as the count of available updates, 2nd as the list of
+    packages to update
 
 **vicious.widgets.raid**
 
@@ -445,8 +448,10 @@ Provides volume levels and state of requested mixers.
 Supported platforms: Linux (required tool: amixer), FreeBSD.
 
 - Arguments (per platform):
-  * Linux: takes the ALSA mixer control as an argument, i.e. `"Master"`,
-    optionally append the card ID or other options, i.e. `"PCM -c 0"`
+  * Linux: takes either a single argument containing the ALSA mixer control as
+    an argument, i.e. `"Master"`, or a table passed as command line arguments
+    to [amixer(1)](https://linux.die.net/man/1/amixer),
+    i.e `{"PCM", "-c", "0"}` or `{"Master", "-D", "pulse"}`.
   * FreeBSD: takes the mixer control as an argument, i.e. `"vol"`
 - Returns:
   * Linux: returns 1st value as the volume level and 2nd as the mute state of
@@ -588,7 +593,7 @@ order to actually display them.
 **Date widget**
 
 ```Lua
-    datewidget = widget({ type = "textbox" })
+    datewidget = wibox.widget.textbox()
     vicious.register(datewidget, vicious.widgets.date, "%b %d, %R")
 ```
 
@@ -598,7 +603,7 @@ date sequences as the format string
 **Memory widget**
 
 ```Lua
-    memwidget = widget({ type = "textbox" })
+    memwidget = wibox.widget.textbox()
     vicious.cache(vicious.widgets.mem)
     vicious.register(memwidget, vicious.widgets.mem, "$1 ($2MB/$3MB)", 13)
 ```
@@ -609,7 +614,7 @@ values and enables caching of this widget type
 **HDD temperature widget**
 
 ```Lua
-    hddtempwidget = widget({ type = "textbox" })
+    hddtempwidget = wibox.widget.textbox()
     vicious.register(hddtempwidget, vicious.widgets.hddtemp, "${/dev/sda} °C", 19)
 ```
 
@@ -620,7 +625,7 @@ not provide the port argument so default port is used
 **Mbox widget**
 
 ```Lua
-    mboxwidget = widget({ type = "textbox" })
+    mboxwidget = wibox.widget.textbox()
     vicious.register(mboxwidget, vicious.widgets.mbox, "$1", 5, "/home/user/mail/Inbox")
 ```
 updated every 5 seconds, provides full path to the mbox as an
@@ -694,7 +699,7 @@ widget.
 
 **Example**
 ```Lua
-    mpdwidget = widget({ type = "textbox" })
+    mpdwidget = wibox.widget.textbox()
     vicious.register(mpdwidget, vicious.widgets.mpd,
      function (widget, args)
        if   args["{state}"] == "Stop" then return ""
@@ -708,7 +713,7 @@ seconds (the default interval)
 
 **Example**
 ```Lua
-    uptimewidget = widget({ type = "textbox" })
+    uptimewidget = wibox.widget.textbox()
     vicious.register(uptimewidget, vicious.widgets.uptime,
       function (widget, args)
         return string.format("Uptime: %2dd %02d:%02d ", args[1], args[2], args[3])
@@ -724,7 +729,7 @@ automatically adapted to text width).
 
 **Example**
 ```Lua
-    uptimewidget = widget({ type = "textbox" })
+    uptimewidget = wibox.widget.textbox()
     uptimewidget.width, uptimewidget.align = 50, "right"
     vicious.register(uptimewidget, vicious.widgets.uptime, "$1 $2:$3", 61)
 ```
@@ -738,7 +743,7 @@ it.
 
 **Example**
 ```Lua
-    ctext = widget({ type = "textbox"})
+    ctext = wibox.widget.textbox()
     cgraph = awful.widget.graph()
     cgraph:set_width(100):set_height(20)
     cgraph:set_stack(true):set_max_value(100)
@@ -801,8 +806,8 @@ Format functions can be used as well:
             naughty.notify({ title = "Battery indicator",
                              text = vicious.call(vicious.widgets.bat, function(widget, args)
                                  return string.format("%s: %10sh\n%s: %14d%%\n%s: %12dW",
-                                                      "Remaining time", args[3], 
-                                                      "Wear level", args[4], 
+                                                      "Remaining time", args[3],
+                                                      "Wear level", args[4],
                                                       "Present rate", args[5])
                              end, "0") })
         end)
