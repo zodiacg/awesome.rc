@@ -1,14 +1,14 @@
-
 --[[
-                                                  
-     Licensed under GNU General Public License v2 
-      * (c) 2013, Luke Bonham                     
-                                                  
+
+     Licensed under GNU General Public License v2
+      * (c) 2013, Luca CPZ
+
 --]]
 
 local helpers  = require("lain.helpers")
 local naughty  = require("naughty")
 local wibox    = require("wibox")
+local awful    = require("awful")
 local string   = { format = string.format,
                    gsub   = string.gsub }
 local type     = type
@@ -27,6 +27,7 @@ local function factory(args)
     local timeout   = args.timeout or 60
     local is_plain  = args.is_plain or false
     local followtag = args.followtag or false
+    local notify    = args.notify or "on"
     local settings  = args.settings or function() end
 
     local head_command = "curl --connect-timeout 3 -fsm 3"
@@ -59,18 +60,16 @@ local function factory(args)
 
         helpers.async(curl, function(f)
             _, mailcount = string.gsub(f, "%d+", "")
-            _ = nil
-
             widget = imap.widget
             settings()
 
-            if mailcount >= 1 and mailcount > helpers.get_map(mail) then
+            if notify == "on" and mailcount >= 1 and mailcount > helpers.get_map(mail) then
                 if mailcount == 1 then
                     nt = mail .. " has one new message"
                 else
                     nt = mail .. " has <b>" .. mailcount .. "</b> new messages"
                 end
-                naughty.notify({ preset = mail_notification_preset, text = nt })
+                naughty.notify { preset = mail_notification_preset, text = nt }
             end
 
             helpers.set_map(mail, mailcount)

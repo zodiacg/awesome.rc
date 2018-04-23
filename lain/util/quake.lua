@@ -1,10 +1,9 @@
-
 --[[
-                                                   
-     Licensed under GNU General Public License v2  
-      * (c) 2016, Luke Bonham                      
-      * (c) 2015, unknown                          
-                                                   
+
+     Licensed under GNU General Public License v2
+      * (c) 2016, Luca CPZ
+      * (c) 2015, unknown
+
 --]]
 
 local awful        = require("awful")
@@ -27,8 +26,6 @@ local quake = {}
 
 function quake:display()
     if self.followtag then self.screen = awful.screen.focused() end
-    local toscan = self.screen
-    if self.onlyone then toscan = nil end
 
     -- First, we locate the client
     local client = nil
@@ -36,7 +33,7 @@ function quake:display()
     for c in awful.client.iterate(function (c)
         -- c.name may be changed!
         return c.instance == self.name
-    end, nil, toscan)
+    end)
     do
         i = i + 1
         if i == 1 then
@@ -66,7 +63,7 @@ function quake:display()
     client.floating = true
     client.border_width = self.border
     client.size_hints_honor = false
-    client:geometry(self:compute_size())
+    client:geometry(self.geometry[self.screen] or self:compute_size())
 
     -- Set not sticky and on top
     client.sticky = false
@@ -130,7 +127,6 @@ function quake:new(config)
     conf.border     = conf.border    or 1          -- client border width
     conf.visible    = conf.visible   or false      -- initially not visible
     conf.followtag  = conf.followtag or false      -- spawn on currently focused screen
-    conf.onlyone    = conf.onlyone   or false      -- one instance for all screens
     conf.overlap    = conf.overlap   or false      -- overlap wibox
     conf.screen     = conf.screen    or awful.screen.focused()
     conf.settings   = conf.settings
@@ -162,7 +158,10 @@ function quake:toggle()
      if self.followtag then self.screen = awful.screen.focused() end
      local current_tag = self.screen.selected_tag
      if current_tag and self.last_tag ~= current_tag and self.visible then
-         self:display():move_to_tag(current_tag)
+         local c=self:display()
+         if c then
+            c:move_to_tag(current_tag)
+        end
      else
          self.visible = not self.visible
          self:display()

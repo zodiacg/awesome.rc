@@ -1,15 +1,14 @@
-
 --[[
-                                                   
-     Lain                                          
-     Layouts, widgets and utilities for Awesome WM 
-                                                   
-     Utilities section                             
-                                                   
-     Licensed under GNU General Public License v2  
-      * (c) 2013,      Luke Bonham                 
-      * (c) 2010-2012, Peter Hofmann               
-                                                   
+
+     Lain
+     Layouts, widgets and utilities for Awesome WM
+
+     Utilities section
+
+     Licensed under GNU General Public License v2
+      * (c) 2013,      Luca CPZ
+      * (c) 2010-2012, Peter Hofmann
+
 --]]
 
 local awful        = require("awful")
@@ -77,7 +76,7 @@ function util.magnify_client(c, width_f, height_f)
     end
 end
 
--- https://github.com/copycat-killer/lain/issues/195
+-- https://github.com/lcpz/lain/issues/195
 function util.mc(c, width_f, height_f)
     c = c or util.magnified_client
     if not c then return end
@@ -117,7 +116,7 @@ function util.add_tag(layout)
         textbox      = awful.screen.focused().mypromptbox.widget,
         exe_callback = function(name)
             if not name or #name == 0 then return end
-            awful.tag.add(name, { screen = awful.screen.focused(), layout = layout or awful.layout.layouts[0] }):view_only()
+            awful.tag.add(name, { screen = awful.screen.focused(), layout = layout or awful.layout.suit.tile }):view_only()
         end
     }
 end

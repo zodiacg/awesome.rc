@@ -1,10 +1,9 @@
-
 --[[
-                                                  
-     Licensed under GNU General Public License v2 
-      * (c) 2013, Luke Bonham                     
-      * (c) 2013, Rman                            
-                                                  
+
+     Licensed under GNU General Public License v2
+      * (c) 2013, Luca CPZ
+      * (c) 2013, Rman
+
 --]]
 
 local helpers        = require("lain.helpers")
@@ -18,7 +17,7 @@ local string         = { format = string.format,
                          rep    = string.rep }
 local type, tonumber = type, tonumber
 
--- Pulseaudio volume bar
+-- PulseAudio volume bar
 -- lain.widget.pulsebar
 
 local function factory(args)
@@ -30,7 +29,8 @@ local function factory(args)
         },
 
         _current_level = 0,
-        _muted         = false
+        _mute          = "no",
+        device         = "N/A"
     }
 
     local args       = args or {}
@@ -40,18 +40,17 @@ local function factory(args)
     local height     = args.heigth or 1
     local ticks      = args.ticks or false
     local ticks_size = args.ticks_size or 7
-    local scallback  = args.scallback
 
-    pulsebar.cmd           = args.cmd or "pacmd list-sinks | sed -n -e '0,/*/d' -e '/base volume/d' -e '/volume:/p' -e '/muted:/p' -e '/device\\.string/p'"
-    pulsebar.sink          = args.sink or 0
-    pulsebar.colors        = args.colors or pulsebar.colors
-    pulsebar.followtag     = args.followtag or false
-    pulsebar.notifications = args.notification_preset
-    pulsebar.device        = "N/A"
+    pulsebar.colors              = args.colors or pulsebar.colors
+    pulsebar.followtag           = args.followtag or false
+    pulsebar.notification_preset = args.notification_preset
+    pulsebar.devicetype          = args.devicetype or "sink"
+    pulsebar.cmd                 = args.cmd or "pacmd list-" .. pulsebar.devicetype .. "s | sed -n -e '/*/,$!d' -e '/index/p' -e '/base volume/d' -e '/volume:/p' -e '/muted:/p' -e '/device\\.string/p'"
 
     if not pulsebar.notification_preset then
-        pulsebar.notification_preset      = {}
-        pulsebar.notification_preset.font = "Monospace 10"
+        pulsebar.notification_preset = {
+            font = "Monospace 10"
+        }
     end
 
     pulsebar.bar = wibox.widget {
@@ -69,13 +68,12 @@ local function factory(args)
     pulsebar.tooltip = awful.tooltip({ objects = { pulsebar.bar } })
 
     function pulsebar.update(callback)
-        if scallback then pulsebar.cmd = scallback() end
-
-        helpers.async({ awful.util.shell, "-c", pulsebar.cmd }, function(s)
+        helpers.async({ awful.util.shell, "-c", type(pulsebar.cmd) == "string" and pulsebar.cmd or pulsebar.cmd() },
+        function(s)
             volume_now = {
-                index = string.match(s, "index: (%S+)") or "N/A",
-                sink  = string.match(s, "device.string = \"(%S+)\"") or "N/A",
-                muted = string.match(s, "muted: (%S+)") or "N/A"
+                index  = string.match(s, "index: (%S+)") or "N/A",
+                device = string.match(s, "device.string = \"(%S+)\"") or "N/A",
+                muted  = string.match(s, "muted: (%S+)") or "N/A"
             }
 
             pulsebar.device = volume_now.index
@@ -93,16 +91,18 @@ local function factory(args)
             local volu = volume_now.left
             local mute = volume_now.muted
 
-            if (volu and volu ~= pulsebar._current_level) or (mute and mute ~= pulsebar._muted) then
-                pulsebar._current_level = volu
+            if volu:match("N/A") or mute:match("N/A") then return end
+
+            if volu ~= pulsebar._current_level or mute ~= pulsebar._mute then
+                pulsebar._current_level = tonumber(volu)
                 pulsebar.bar:set_value(pulsebar._current_level / 100)
-                if (not mute and volu == 0) or mute == "yes" then
-                    pulsebar._muted = true
-                    pulsebar.tooltip:set_text ("[Muted]")
+                if pulsebar._current_level == 0 or mute == "yes" then
+                    pulsebar._mute = mute
+                    pulsebar.tooltip:set_text ("[muted]")
                     pulsebar.bar.color = pulsebar.colors.mute
                 else
-                    pulsebar._muted = false
-                    pulsebar.tooltip:set_text(string.format("%s: %s", pulsebar.sink, volu))
+                    pulsebar._mute = "no"
+                    pulsebar.tooltip:set_text(string.format("%s %s: %s", pulsebar.devicetype, pulsebar.device, volu))
                     pulsebar.bar.color = pulsebar.colors.unmute
                 end
 
@@ -117,15 +117,29 @@ local function factory(args)
         pulsebar.update(function()
             local preset = pulsebar.notification_preset
 
-            if pulsebar._muted then
-                preset.title = string.format("Sink %s - Muted", pulsebar.sink)
-            else
-                preset.title = string.format("%s - %s%%", pulsebar.sink, pulsebar._current_level)
+            preset.title = string.format("%s %s - %s%%", pulsebar.devicetype, pulsebar.device, pulsebar._current_level)
+
+            if pulsebar._mute == "yes" then
+                preset.title = preset.title .. " muted"
             end
 
-            int = math.modf((pulsebar._current_level / 100) * awful.screen.focused().mywibox.height)
+            -- tot is the maximum number of ticks to display in the notification
+            -- fallback: default horizontal wibox height
+            local wib, tot = awful.screen.focused().mywibox, 20
+
+            -- if we can grab mywibox, tot is defined as its height if
+            -- horizontal, or width otherwise
+            if wib then
+                if wib.position == "left" or wib.position == "right" then
+                    tot = wib.width
+                else
+                    tot = wib.height
+                end
+            end
+
+            int = math.modf((pulsebar._current_level / 100) * tot)
             preset.text = string.format("[%s%s]", string.rep("|", int),
-                          string.rep(" ", awful.screen.focused().mywibox.height - int))
+                          string.rep(" ", tot - int))
 
             if pulsebar.followtag then preset.screen = awful.screen.focused() end
 
